@@ -1,0 +1,19 @@
+{
+  "name": "server1",
+  "version": "1.0.0",
+  "description": "Server for project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "joi": "^14.3.0",
+    "join": "^3.0.0",
+    "mysql": "^2.16.0",
+    "nodejs-latest": "^1.1.0",
+    "sqlite3": "^4.0.4"
+  }
+}

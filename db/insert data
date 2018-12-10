@@ -1,0 +1,1 @@
+Insert into data_entry (id, sensor_id, value, timestamp) values (1,"temperature",32,"Jun 09 2018 15:28:14");

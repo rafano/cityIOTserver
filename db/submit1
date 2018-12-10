@@ -1,0 +1,1 @@
+Insert into devices (status, name, longitude, latitude, last_update, battery) values ("ok","Mcdonalds sensor",41.153270,-8.638772,"Jun 09 2018 15:28:14",22);
