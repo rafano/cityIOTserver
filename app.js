@@ -544,7 +544,7 @@ app.post('/device/register/', (req,res) => {
 	const schema = Joi.object().keys({
 		latitude: Joi.number().min(-90).max(90).required(),
 		longitude: Joi.number().min(-180).max(180).required(),
-		battery: Joi.number().integer().min(0).max(100),
+		type: Joi.string(),
 		title: Joi.string().min(3).max(30).required(), 
 	});
 	const result = Joi.validate(JSON.stringify(req.body), schema);
@@ -555,8 +555,8 @@ app.post('/device/register/', (req,res) => {
 	// register device
 	var datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 	//console.log(datetime);
-	db.run(`INSERT INTO devices(status,name,longitude,latitude,last_update,battery) VALUES (?, ?, ?, ?,?,?)`,
-		["ok",req.body.title,req.body.longitude,req.body.latitude,datetime, req.body.battery], function(err) {
+	db.run(`INSERT INTO devices(status,name,longitude,latitude,last_update,type) VALUES (?, ?, ?, ?,?,?)`,
+		["ok",req.body.title,req.body.longitude,req.body.latitude,datetime, req.body.type], function(err) {
 			if (err) {
 				res.status(406).send("Failed to create device entry in database:" + err.message + "\n");
 				return;
@@ -583,7 +583,7 @@ app.put('/device/update/:id',(req,res) => {
 	const schema2 = Joi.object().keys({
 		latitude: Joi.number().min(-90).max(90).required(),
 		longitude: Joi.number().min(-180).max(180).required(),
-		battery: Joi.number().integer().min(0).max(100),
+		type: Joi.number().integer().min(0).max(100),
 		title: Joi.string().min(3).max(30).required(), 
 	});
 	const result2 = Joi.validate(JSON.stringify(req.body), schema2);
@@ -597,7 +597,7 @@ app.put('/device/update/:id',(req,res) => {
 	let sql2 = `SELECT id id,
 	Name name, status status, longitude longitude, 
 	latitude latitude, last_update last_update,
-	battery battery
+	type type
 	FROM devices
 	WHERE id  = ?`;
 	db.get(sql2, [req.params.id], (err, row) => {
@@ -606,9 +606,9 @@ app.put('/device/update/:id',(req,res) => {
 		}
 		if(row) {
 			// update
-			let data = [req.body.latitude ,req.body.longitude ,req.body.battery ,req.body.title , req.params.id];
+			let data = [req.body.latitude ,req.body.longitude ,req.body.type ,req.body.title , req.params.id];
 			let sql = `UPDATE devices
-			SET latitude = ?, longitude = ?, battery = ? , name = ?
+			SET latitude = ?, longitude = ?, type = ? , name = ?
 			WHERE id = ?`;
 			db.run(sql, data, function(err) {
 				if (err) {
@@ -644,7 +644,7 @@ app.delete('/device/delete/:id',(req,res) => {
 	let sql2 = `SELECT id id,
 	Name name, status status, longitude longitude, 
 	latitude latitude, last_update last_update,
-	battery battery
+	type type
 	FROM devices
 	WHERE id  = ?`;
 	db.get(sql2, [req.params.id], (err, row) => {
