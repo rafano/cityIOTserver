@@ -32,7 +32,7 @@ app.get('/devices', (req,res) => {
 	let sql = `SELECT DISTINCT id id,
 	Name name, status status, longitude longitude, 
 	latitude latitude, last_update last_update,
-	battery battery FROM devices
+	type type FROM devices
 	ORDER BY id`;
 
 	var returnArray = new Array();
