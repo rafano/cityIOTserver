@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const sqlite3 = require('sqlite3').verbose();
 var bodyParser = require('body-parser');
+const geolib = require('geolib');
 
 // imported classses
 const Joi = require('joi');
@@ -14,12 +15,12 @@ app.use(bodyParser.json());
 // get requests 
 app.get('/devices', (req,res) => {
 	console.log('new GET request: /devices');
-	console.log('query:' + JSON.stringify(req.query));
+	console.log('query:' + req.query.locationLatitude + req.query.locationLongitude);
 
 	const schema = Joi.object().keys({
 		locationLatitude: Joi.number().min(-90).max(90),
 		locationLongitude: Joi.number().min(-180).max(180),
-		distanceLimit: Joi.number().integer().min(0).max(50),
+		distanceLimit: Joi.number().integer().min(0).max(1000),
 	});
 	const result = Joi.validate(req.query, schema);
 	if(result.error) {
@@ -51,11 +52,29 @@ app.get('/devices', (req,res) => {
 			obj.coordinate = cords;
 			obj.last_update = row.last_update;
 			obj.type = row.type;
-			console.log(JSON.stringify(obj))
+			//console.log(JSON.stringify(obj))
 			returnArray.push(obj);
 		});
+
+		// check if they are in distance;
+		var coords2 = new Object();
+		coords2.latitude = req.query.locationLatitude;
+		coords2.longitude = req.query.locationLongitude;
+
+		for (index = 0; index < returnArray.length; index++) {
+			var distance = (geolib.getDistance(coords2,returnArray[index].coordinate,[100]) / 1000);
+			console.log(distance + " km");
+			if(distance > req.query.distanceLimit) {
+				console.log("sliced" + index);
+				returnArray.splice(index,1);
+				index--;
+				//delete returnArray[index];
+			}
+		}
+
 		if (returnArray.length > 0) {
 			res.status(200).send(returnArray);
+			return;
 		}
 		else {
 			res.status(403).send("No devices found" + "\n");
@@ -674,8 +693,8 @@ app.delete('/device/delete/:id',(req,res) => {
 
 // Connection info
 const hostname = 'localhost';
-const PORT =  process.env.PORT || 3000;
-app.listen(3000, ()=> console.log(`Server running at http://${hostname}:${PORT}/`));
+const PORT =  process.env.PORT || 30000;
+app.listen(30000, ()=> console.log(`Server running at http://${hostname}:${PORT}/`));
 
 
 // mysql
