@@ -65,7 +65,7 @@ app.get('/devices', (req,res) => {
 			var distance = (geolib.getDistance(coords2,returnArray[index].coordinate,[100]) / 1000);
 			console.log(distance + " km");
 			if(distance > req.query.distanceLimit) {
-				console.log("sliced" + index);
+				console.log("not in range: " + index);
 				returnArray.splice(index,1);
 				index--;
 				//delete returnArray[index];
@@ -116,7 +116,8 @@ app.get('/device/:id', (req,res) => {
 			obj.coordinate = cords;
 			obj.last_update = row.last_update;
 			obj.type = row.type;
-			console.log(JSON.stringify(obj))
+			// getting latest data!
+			//console.log(JSON.stringify(obj))
 			res.status(200).send(obj);
 		}
 		else {
@@ -693,8 +694,8 @@ app.delete('/device/delete/:id',(req,res) => {
 
 // Connection info
 const hostname = 'localhost';
-const PORT =  process.env.PORT || 30000;
-app.listen(30000, ()=> console.log(`Server running at http://${hostname}:${PORT}/`));
+const PORT =  process.env.PORT || 3000;
+app.listen(3000, ()=> console.log(`Server running at http://${hostname}:${PORT}/`));
 
 
 // mysql
